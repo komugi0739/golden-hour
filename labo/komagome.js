@@ -23,7 +23,7 @@ async function nicoText(mes){
 function tobiText(youso, mes, config = {}) {
     let {
         mode = "booba", //booba(楕円)かkiki(トゲトゲ)
-        back = "#2b2b2b",
+        back = Style.ki["bor"],
     } = config;
 
     let el = youso;
@@ -43,7 +43,7 @@ function tobiText(youso, mes, config = {}) {
     div.style.top = `${top}px`;
     div.style.left = `${left}px`;
     div.style.setProperty('---back', back);
-    div.style.color = "#2b2b2b";
+    div.style.color = Style.ki["bor"];
     if(irohaDark(back)) div.style.color = "#ffffff";
 
     if(mode == 'kiki'){
@@ -400,7 +400,7 @@ function anagramCan(mae, ato){
     return 1;
 };
 
-function cardDraw(val0 = 0, suit0 = 0){
+function cardDraw(val0 = 0, suit0 = 0, code = 0){
     let val = random(1, 13);
     let suit = arraySelect(['♡', '♤', '♢', '♧']);
     if(val0) val = val0;
@@ -408,10 +408,12 @@ function cardDraw(val0 = 0, suit0 = 0){
     
     let hyou = val;
     if(val == 1)  hyou = 'A';
-    if(val == 10) hyou = 'X';
+    // if(val == 10) hyou = 'X';
     if(val == 11) hyou = 'J';
     if(val == 12) hyou = 'Q';
     if(val == 13) hyou = 'K';
+
+    if(10 < val && code == "bj") val = 10;
     
     let card = {    
         suit,
@@ -432,7 +434,7 @@ function cardCalc(arr, code = 0){
         if(card.hide) continue;
         let v = card.val;
         if(code == "bj"){
-            if(10 <= v) v = 10; //bjなら10に矯正
+            //if(10 <= v) v = 10; //bjなら10に矯正
             if(v == 1) As++;
         }
         sum += v;
@@ -1106,7 +1108,7 @@ class alertD{
         let div = document.createElement('div');
         div.classList.add('alertD');
         div.style.background = back;
-        div.style.boxShadow = `${hoshoku(back)} 5px 5px 20px`;
+        div.style.boxShadow = `${irohaHo(back)} 5px 5px 20px`;
 
         let row = document.createElement('div');
         row.classList.add('row');
@@ -1119,14 +1121,14 @@ class alertD{
 
          let text = document.createElement('div');
          text.innerText = this.text;
-         text.style.color = hoshoku(back);
+         text.style.color = irohaHo(back);
          row.appendChild(text);
         div.appendChild(row);
 
         let x = document.createElement('div');
         x.className = 'x';
         x.innerText = '×';
-        x.style.color = hoshoku(back);
+        x.style.color = irohaHo(back);
         x.addEventListener('click', () => this.delete());
         div.appendChild(x);
         
@@ -1172,6 +1174,36 @@ class alertD{
         setTimeout(() => div.remove(), 1000);
     };
 };
+
+class DBdesc{
+    constructor(text, data){
+        let txt = text.endsWith(".txt");
+
+        let div;
+        if(!txt){
+            div = El("div", "DBdesc");
+            div.innerText = text;
+        }
+        else{
+            div = El("iframe", "DBdesc");
+            div.src = text;
+        }
+
+        div.classList.add("draggable");
+
+        div.addEventListener("dblclick", () => {
+            div.remove();
+        });
+
+        this.div = div;
+    }
+
+    append(div0 = 0){
+        if(!div0) div0 = mainD;
+        console.log(this.div);
+        div0.appendChild(this.div);
+    }
+}
 //#endregion
 //#region CheckBox feat.Slider
 class Checkbox {
@@ -1186,8 +1218,8 @@ class Checkbox {
         this.func = func;
 
         if(!data) data = {
-            back: '#b2b2b2',
-            backed: '#2b2b2b'
+            back: Style.ki["back"],
+            backed: Style.ki["bor"]
         }
         this.data = data; //固有。func用だったりするのかも
 
@@ -1239,8 +1271,8 @@ class Slider {
         this.func = func;
 
         if(!data) data = {
-            back: '#b2b2b2',
-            backed: '#2b2b2b'
+            back: Style.ki["back"],
+            backed: Style.ki["bor"]
         }
         this.data = data;
 
@@ -1309,8 +1341,8 @@ class TakushiSen {
         this.mode = mode;
 
         if(!data) data = {
-            back: '#b2b2b2',
-            backed: '#2b2b2b'
+            back: Style.ki["back"],
+            backed: Style.ki["bor"]
         };
         this.data = data;
 
@@ -1449,7 +1481,7 @@ tensheeD.querySelectorAll('.bt').forEach(bt => {
 })
 
 //#endregion
-// #region provide
+//#region provide
 class fuyoNagaOSU{
     constructor(div, func, nagasa = 1000){
         if(!div || !nagasa) return console.error(`せんぱ〜い？ ${div} ${func} ${nagasa} なんていうよくわからないものは使わないでくださ〜い笑`);
@@ -1940,4 +1972,3 @@ document.addEventListener('keydown', async function(e){
     secratesP(key);
 })
 //#endregion
-

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .countdown {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- カウントダウンタイマーを作るjs-classを作りたい、というテスト。プログレスバー要素とかも出したりして。 -->
+    <div id="bts"> <!-- bts-僕が次に好きだったのに ←存在しない言葉 -->
+        <div class="row">
+            <input class="t" type="number" placeholder="秒数(s)"/>
+            <input class="name" type="text" placeholder="名称"/>
+            <div class="gene">キー生成キ</div>
+        </div>
+    </div>
+
+    <div id="list"></div>
+
+    <script>
+        function El(tag, cls, children = []){
+            let e = document.createElement(tag);
+            if(cls) e.className = cls;
+            children.forEach(c => e.appendChild(c));
+            return e;
+        }
+        function hit(num){
+            return +(Math.random()*100 <= num);
+            //例:num == 20 → randomが20以内なら1, elseなら0を返す
+        };
+    </script>
+
+    <script defer>
+        class Countdown{
+            constructor(t, name = "Untitled"){
+                if(!t) return 0;
+                if(name == "Untitled" && hit(18)) name = "Untideld";
+                
+                this.maxt = t; // in seconds
+                this.t = this.maxt;
+                this.intervalI = null;
+
+                this.Ds = {};
+                let inner = El("div", "inner");
+                 this.Ds["inner"] = inner;
+                let text = El("div", "text");
+                 text.textContent = name;
+                 this.Ds["text"] = text;
+                let time = El("div", "time");
+                 this.Ds["time"] = time;
+                let div = El("div", "countdown", [inner, text, time]);
+                
+                this.div = div;
+            }
+            append(div0){
+                div0.appendChild(this.div);
+            }
+
+            start(){
+                if(this.intervalI) return;
+                this.update();
+                this.intervalI = setInterval(() => {
+                    this.t -= 10;
+                    this.update();
+                    if (this.t <= 0) {
+                        clearInterval(this.intervalI);
+                         this.intervalI = null;
+                        this.end();
+                    }
+                }, 1000);
+            }
+
+            pause(){
+                if(this.intervalI){
+                    clearInterval(this.intervalI);
+                    this.intervalI = null;
+                }
+            }
+
+            reset(){
+                this.t = this.maxt;
+                this.update();
+            }
+
+            update(){
+                let sec = this.t;
+                let min = Math.floor(sec / 60);
+                let hour = Math.floor(min / 60);
+                if(100 <= hour){
+                    this.Ds["time"].textContent = `${hour}h`;
+                }
+                else if(100 <= min){
+                    this.Ds["time"].textContent = `${min}m`;
+                }
+                else{
+                    this.Ds["time"].textContent = `${sec}s`;
+                }
+            }
+        }
+
+        let btsD = document.getElementById("bts");
+         let timeD = btsD.querySelector(".t");
+         let geneD = btsD.querySelector(".gene");
+        let listD = document.getElementById("list");
+
+        geneD.addEventListener("click", () => {
+            let t = +timeD.value;
+            if(isNaN(t) || t <= 0) return timeD.value = "";
+            
+            let name = btsD.querySelector(".name").value || "Untitled";
+            let mono = new Countdown(t, name);
+            mono.append(listD);
+        });
+    </script>
+</body>
+</html>

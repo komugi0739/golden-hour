@@ -55,6 +55,16 @@ document.addEventListener('keyup',e => {
 
 //#endregion main
 
+function findGeneric(list, type, name, extraCheck = null){
+    let data;
+    if(extraCheck) data = extraCheck(list, name);
+     else data = list.find(a => a.name == name || a.jpnm == name);
+    if(data) return data;
+    
+    console.log(`[find] ${type}で、「${name}」っていうものはないらしいです`);
+    return 0;
+}
+// const findKaris = (name) => findGeneric(Karis, "Karis", name);
 
 //#region start
 function start(){
@@ -63,7 +73,7 @@ function start(){
 
     mainF.load();
 
-    let hash = location.search.replace("?", "");
+    let hash = location.hash.replace("?", "");
     let space = Spaces.find(a => a.name == hash);
     if(!space) space = Spaces.find(a => a.sho);
     mainF.move(space.name);
@@ -81,4 +91,3 @@ async function init() {
     await LoadOfWait();
 }
 //#endregion
-
