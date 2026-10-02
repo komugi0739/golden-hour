@@ -6,9 +6,106 @@
     <title>Document</title>
 
     <style>
+        body{
+            background: #cfe9ff;
+            
+        }
+        :root{
+            --ki-back: #b2b2b2;
+            --ki-bor:  #2b2b2b;
+        }
+        .checkbox{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100px;
+            aspect-ratio: 3/1;
+            padding: 0 5px;
+            background: var(--back, var(--ki-back));
+                color: var(--back-col, var(--ki-bor));
+                transition: background 0.25s, color 0.25s;
+            position: relative;
+            border-radius: 20px;
+        }
+        .checkbox.tog{
+            background: var(--backed, var(--ki-bor));
+                color: var(--backed-col, var(--ki-back));
+        }
+        .checkbox .text{
+            font-family: comicsans;
+        }
+
         .countdown {
-            font-size: 24px;
-            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            width: auto;
+            height: fit-content;
+            padding: 5px 10px;
+
+            & .row{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                
+                & .text{
+                    display: block;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 12px;
+                    color: var(--ki-aima);
+                }
+
+                & .time{
+                    display: block;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 12px;
+                    color: var(--ki-aima);
+                }
+            }
+            
+            & .bar{
+                display: block;
+                width: 100%;
+                height: 12px;
+                background: var(--ki-back);
+                border-radius: 10px;
+                position: relative;
+
+                & .inner{
+                    display: block;
+                    width: 0;
+                    height: 100%;
+                    background: var(--ki-bor);
+                    border-radius: inherit;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+            }
+
+
+        }
+
+        .row{
+            display: flex;
+            flex-direction: row;
+
+            .gene{
+                display: inline-block;
+                padding: 5px 10px;
+                background: #b2d7ff;
+                &:active{
+                    background: #7abaff;
+                }
+            }
         }
     </style>
 </head>
@@ -35,11 +132,63 @@
             return +(Math.random()*100 <= num);
             //例:num == 20 → randomが20以内なら1, elseなら0を返す
         };
+        class Checkbox {
+            constructor(
+                name = "テキストを入力してください",
+                kitei = 0,
+                func = 0,
+                data = 0
+            ){
+                this.name = name;
+                this.kitei = kitei;
+                this.func = func;
+
+                if(!data) data = {
+                    back: Style.ki["back"],
+                    backed: Style.ki["bor"]
+                }
+                this.data = data; //固有。func用だったりするのかも
+
+                this.make();
+                // ここでこいつをreturnしたらinstanceが消える(このclassの他の関数を作れなくなる)
+            }
+            make(){
+                let div = document.createElement('div');
+                div.className = 'checkbox';
+                if(this.kitei) div.classList.add('tog');
+                div.dataset.cl = this.kitei; //0がoff..のはず
+
+                let [cBack, cBacked] = [this.data.back, this.data.backed];
+                div.style.setProperty('--back', cBack);
+                    div.style.setProperty('--back-col', irohaHo(cBack));
+                div.style.setProperty('--backed', cBacked);
+                    div.style.setProperty('--backed-col', irohaHo(cBacked));
+                
+                let text = document.createElement('div');
+                text.className = 'text';
+                text.textContent = this.name;
+                div.appendChild(text);
+
+                let clcl = async () => {
+                    div.dataset.cl = fl(div.dataset.cl);
+                    div.classList.toggle('tog', div.dataset.cl == 1);
+
+                    if(this.func) this.func();
+                };
+                div.addEventListener('click', clcl);
+
+                this.div = div;
+            };
+
+            append(parent){
+                parent.appendChild(this.div);
+            }
+        };
     </script>
 
     <script defer>
         class Countdown{
-            constructor(t, name = "Untitled"){
+            constructor(t, name = "Untitled", func = null, data = {}){
                 if(!t) return 0;
                 if(name == "Untitled" && hit(18)) name = "Untideld";
                 
@@ -47,15 +196,27 @@
                 this.t = this.maxt;
                 this.intervalI = null;
 
+                this.func = func;
+
+                if(data.socks) this.socks = 1;
                 this.Ds = {};
-                let inner = El("div", "inner");
-                 this.Ds["inner"] = inner;
+
                 let text = El("div", "text");
                  text.textContent = name;
                  this.Ds["text"] = text;
                 let time = El("div", "time");
                  this.Ds["time"] = time;
-                let div = El("div", "countdown", [inner, text, time]);
+                let row = El("div", "row", [text, time]);
+
+                let inner = El("div", "inner");
+                 this.Ds["inner"] = inner;
+                let bar = El("div", "bar", [inner]);
+
+                let div = El("div", "countdown", [row, bar]);
+
+                div.addEventListener("click", () => {
+                    if(this.t == 0) this.end();
+                });
                 
                 this.div = div;
             }
@@ -63,16 +224,17 @@
                 div0.appendChild(this.div);
             }
 
-            start(){
+            async start(){
                 if(this.intervalI) return;
                 this.update();
-                this.intervalI = setInterval(() => {
-                    this.t -= 10;
+                this.intervalI = setInterval(async() => {
+                    this.t -= 1;
                     this.update();
-                    if (this.t <= 0) {
+                    if(this.t <= 0){
                         clearInterval(this.intervalI);
                          this.intervalI = null;
-                        this.end();
+                        if(this.func) await this.func();
+                        if(this.socks) this.end();
                     }
                 }, 1000);
             }
@@ -89,19 +251,27 @@
                 this.update();
             }
 
+            end(){
+                this.div.remove();
+            }
+
             update(){
                 let sec = this.t;
                 let min = Math.floor(sec / 60);
                 let hour = Math.floor(min / 60);
-                if(100 <= hour){
+                if(100 <= min){
                     this.Ds["time"].textContent = `${hour}h`;
                 }
-                else if(100 <= min){
+                else if(100 <= sec){
                     this.Ds["time"].textContent = `${min}m`;
                 }
                 else{
                     this.Ds["time"].textContent = `${sec}s`;
                 }
+
+                let per = this.t / this.maxt;
+                 per = 1 - per;
+                this.Ds["inner"].style.width = `${per*100}%`;
             }
         }
 
@@ -117,6 +287,7 @@
             let name = btsD.querySelector(".name").value || "Untitled";
             let mono = new Countdown(t, name);
             mono.append(listD);
+            mono.start();
         });
     </script>
 </body>
