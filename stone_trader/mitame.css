@@ -892,24 +892,6 @@ input[type="range"].slider::-webkit-slider-thumb:hover{
 /*#endregion*/
 
 
-.area{
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 45px;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    position: relative;
-    overflow: hidden;
-    box-sizing: border-box;
-    padding-top: 25%;
-}
-.area.show{
-    display: flex;
-}
-
 /* #region upper */
 #upper{
     width: 100%;
@@ -951,43 +933,37 @@ input[type="range"].slider::-webkit-slider-thumb:hover{
 #upper .back{
     display: block;
     width: 125px;
-    height: 50px;
+    height: 60px;
     background: var(--back-col);
     position: absolute;
     right: 0;
-    bottom: 0px;
-    transition: bottom 0.5s ease, background 0.5s ease;
-    cursor: pointer;
-    z-index: -10;
-}
-#upper .back.show{
-    bottom: -25px;
-    transition: bottom 0.5s ease, background 1.0s ease;
-}
-#upper .back.show:hover{
-    /* background: #adcfff; */
-    bottom: -50px;
-}
-#upper .back::after{
-    content: '';
-    display: none;
-    width: 100%;
-    height: 100%;
-    position: absolute;
     top: 0px;
-    left: 0px;
-    background: var(--back-col);
-    transition: background 4.0s ease;
-    pointer-events: none;
-}
-#upper .back:active{
-    background: #f0f8ff;
-}   
-#upper .back:active::after{
-    background: #f0f8ff;
-}
-#upper .back.show:hover::after{
-    display: block;
+    transition: height 0.5s ease, background 0.5s ease;
+    cursor: pointer;
+    z-index: -1;
+
+    &:hover{
+        /* background: #adcfff; */
+        height: 110px;
+    }
+    &:active{
+        background: #f0f8ff;
+    }
+
+    &::after{
+        content: "戻る";
+        display: block;
+        width: 100%;
+        height: auto;
+        position: absolute;
+        bottom: 15px;
+        left: 0;
+        font-size: 26px;
+        text-align: center;
+        font-family: hangyaku;
+        line-height: 30px;
+    }
+
 }
 /* #endregion */
 

@@ -96,8 +96,8 @@ let uppF = {};
 uppF.tekiou = () => {
     uppC.rimiD.textContent = `#${rimi}`;
 };
-uppF.backA = () => uppC.bacD.classList.add('show');
-uppF.backD = () => uppC.bacD.classList.remove('show');
+// uppF.backA = () => uppC.bacD.classList.add('show');
+// uppF.backD = () => uppC.bacD.classList.remove('show');
 uppC.bacD.addEventListener('click', () => mainF.move('loby'));
 // #endregion
 
